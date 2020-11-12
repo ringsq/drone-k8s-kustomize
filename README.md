@@ -10,6 +10,7 @@ steps:
   - name: deploy
     image: gauravgaglani/drone/k8s-kustomize
     settings:
+      image: docker.pkg.github.com/magna5/companies_master_service/companies_master_service_image
       kubeconfig:
         from_secret: kubeconfig
       folderpath: deploy/overlays/production
@@ -23,6 +24,7 @@ Configuration
 
 | Field      |                 Description                  | Optional | Defaults |
 | :--------- | :------------------------------------------: | :------: | :------: |
+| image      |           an image to be deployed            |    no    |          |
 | kubeconfig |   kubeconfig as a secret in drone secrets    |    no    |          |
 | folderpath | a path where kustomization.yaml can be found |    no    |          |
 | debug      |       print commands and their output        |   yes    |  false   |
