@@ -40,7 +40,7 @@ steps:
   - name: build-push-image
     image: plugins/docker
     settings:
-      auto_tag: true
+      auto_tag: false
       repo: gauravgaglani/k8s-kustomize
 #      repo: docker.pkg.github.com/magna5/companies_master_service/companies_master_service_image
 #      registry: docker.pkg.github.com
