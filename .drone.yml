@@ -1,0 +1,26 @@
+---
+kind: pipeline
+type: docker
+name: docker build
+steps:
+  - name: create tags
+    image: alpine
+    commands:
+      - echo "Deploying version $DRONE_SEMVER"
+      - echo -n "$DRONE_SEMVER, latest" > .tags
+
+  - name: build image
+    image: plugins/docker
+    settings:
+      auto_tag: true
+      repo: gauravgaglani/drone/k8s-kustomize
+#      repo: docker.pkg.github.com/magna5/companies_master_service/companies_master_service_image
+#      registry: docker.pkg.github.com
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+
+trigger:
+  event:
+    - tag
