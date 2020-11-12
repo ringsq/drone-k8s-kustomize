@@ -16,9 +16,11 @@ if [ -n "$PLUGIN_KUBECONFIG" ];then
     unset PLUGIN_KUBECONFIG
 fi
 
+cd "${PLUGIN_FOLDERPATH}"
+
 kustomize edit set image "$PLUGIN_IMAGE":$DRONE_SEMVER
 
-[ -n "${PLUGIN_DEBUG:-false}" ] && kustomize build "${PLUGIN_FOLDERPATH}"
+[ -n "${PLUGIN_DEBUG:-false}" ] && kustomize build
 
 if [ "$PLUGIN_DRYRUN" = false ]; then
     kustomize build | kubectl apply -f -
