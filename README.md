@@ -8,7 +8,7 @@ Kustomize plugin for Drone CI.
 ```
 steps:
   - name: deploy
-    image: gauravgaglani/drone/k8s-kustomize
+    image: gauravgaglani/k8s-kustomize
     settings:
       image: docker.pkg.github.com/magna5/companies_master_service/companies_master_service_image
       kubeconfig:
