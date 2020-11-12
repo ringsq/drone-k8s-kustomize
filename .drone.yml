@@ -41,7 +41,7 @@ steps:
     image: plugins/docker
     settings:
       auto_tag: true
-      repo: gauravgaglani/drone/k8s-kustomize
+      repo: gauravgaglani/k8s-kustomize
 #      repo: docker.pkg.github.com/magna5/companies_master_service/companies_master_service_image
 #      registry: docker.pkg.github.com
       username:
