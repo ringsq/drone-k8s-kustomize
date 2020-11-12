@@ -1,15 +1,15 @@
 ---
 kind: pipeline
 type: docker
-name: docker test
+name: test
 steps:
-  - name: create tags
+  - name: create-tags
     image: alpine
     commands:
       - echo "Deploying version $DRONE_SEMVER"
       - echo -n "$DRONE_SEMVER, latest" > .tags
 
-  - name: build image
+  - name: docker-build
     image: plugins/docker
     settings:
       dry_run: true
@@ -29,15 +29,15 @@ trigger:
 ---
 kind: pipeline
 type: docker
-name: docker build
+name: docker-build
 steps:
-  - name: create tags
+  - name: create-tags
     image: alpine
     commands:
       - echo "Deploying version $DRONE_SEMVER"
       - echo -n "$DRONE_SEMVER, latest" > .tags
 
-  - name: build image
+  - name: build-push-image
     image: plugins/docker
     settings:
       auto_tag: true
