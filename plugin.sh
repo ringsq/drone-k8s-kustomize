@@ -2,10 +2,10 @@
 
 set -eu pipefail
 
-"${PLUGIN_DEBUG:-false}" && set -x
+"${PLUGIN_DEBUG:-false}" && set -x && printenv
 
 if [ -z "$PLUGIN_KUBECONFIG" ] || [ -z "$PLUGIN_FOLDERPATH" ]; then
-    echo "KUBECONFIG and/or FILEPATH not supplied"
+    echo "KUBECONFIG and/or FOLDERPATH not supplied"
     exit 1
 fi
 
@@ -15,6 +15,8 @@ if [ -n "$PLUGIN_KUBECONFIG" ];then
     echo "$PLUGIN_KUBECONFIG" > $HOME/.kube/config
     unset PLUGIN_KUBECONFIG
 fi
+
+kustomize edit set image "$PLUGIN_IMAGE":${$DRONE_SEMVER}
 
 [ -n "${PLUGIN_DEBUG:-false}" ] && kustomize build "${PLUGIN_FOLDERPATH}"
 
