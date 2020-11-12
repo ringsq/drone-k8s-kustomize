@@ -12,4 +12,6 @@ RUN kustomize version
 # copy plugin.sh which contains deployment logic
 COPY plugin.sh /drone/
 
+RUN chmod -R 777 /drone/
+
 ENTRYPOINT [ "/drone/plugin.sh" ]
