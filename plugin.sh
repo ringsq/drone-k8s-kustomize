@@ -16,7 +16,7 @@ if [ -n "$PLUGIN_KUBECONFIG" ];then
     unset PLUGIN_KUBECONFIG
 fi
 
-kustomize edit set image "$PLUGIN_IMAGE":${$DRONE_SEMVER}
+kustomize edit set image "$PLUGIN_IMAGE":$DRONE_SEMVER
 
 [ -n "${PLUGIN_DEBUG:-false}" ] && kustomize build "${PLUGIN_FOLDERPATH}"
 
