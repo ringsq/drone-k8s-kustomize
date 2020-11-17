@@ -26,4 +26,6 @@ kustomize edit set image "$PLUGIN_IMAGE":$DRONE_SEMVER
 
 if [ "$PLUGIN_DRYRUN" = false ]; then
     kustomize build | kubectl apply -f -
+else
+    kustomize build | kubectl apply -f - --dry-run=server
 fi
