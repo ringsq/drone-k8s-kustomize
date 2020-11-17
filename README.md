@@ -29,3 +29,8 @@ Configuration
 | folderpath | a path where kustomization.yaml can be found |    no    |          |
 | debug      |       print commands and their output        |   yes    |  false   |
 | dryrun     |       print kustomization build output       |   yes    |  false   |
+
+# Hack the Image Tag
+In order to override the `DRONE_SEMVER`, one can specify `tag` while invoking the deployment as shown in below image
+
+![Hack-the-image-tag](resources/images/hack-image-tag.JPG)
