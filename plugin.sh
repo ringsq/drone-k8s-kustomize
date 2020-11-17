@@ -18,7 +18,9 @@ fi
 
 cd "${PLUGIN_FOLDERPATH}"
 
-kustomize edit set image "$PLUGIN_IMAGE":$DRONE_SEMVER
+${tag:-$DRONE_SEMVER}
+
+kustomize edit set image "$PLUGIN_IMAGE":$tag
 
 [ -n "${PLUGIN_DEBUG:-false}" ] && kustomize build
 
