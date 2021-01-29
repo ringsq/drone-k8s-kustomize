@@ -16,6 +16,7 @@ if [ -n "$PLUGIN_KUBECONFIG" ];then
     unset PLUGIN_KUBECONFIG
 fi
 
+echo "---- Checking if migrations flag set ----"
 if ["$PLUGIN_MIGRATION_JOB" = true]; then
     if [-n "$PLUGIN_NAMESPACE"]; then
         echo "Deleting the k8s Job resource: ${PLUGIN_JOBNAME} in Namespace: ${PLUGIN_NAMESPACE}"
