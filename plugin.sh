@@ -17,9 +17,11 @@ if [ -n "$PLUGIN_KUBECONFIG" ];then
 fi
 
 echo "---- Checking if migrations flag set ----"
-if [ ! -z "$PLUGIN_MIGRATION_JOB" ]
+PLUGIN_MIGRATION_JOB="${PLUGIN_MIGRATION_JOB:-false}"
+if [ $PLUGIN_MIGRATION_JOB == true ]
     then
-    if [ ! -z "$PLUGIN_NAMESPACE" ]
+    PLUGIN_NAMESPACE="${PLUGIN_NAMESPACE:-missing}"
+    if [ PLUGIN_NAMESPACE != "missing" ]
         then
         echo "Deleting the k8s Job resource: ${PLUGIN_JOBNAME} in Namespace: ${PLUGIN_NAMESPACE}"
         kubectl delete -n ${PLUGIN_NAMESPACE} job/${PLUGIN_JOBNAME}
