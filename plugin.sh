@@ -16,6 +16,13 @@ if [ -n "$PLUGIN_KUBECONFIG" ];then
     unset PLUGIN_KUBECONFIG
 fi
 
+if ["$PLUGIN_MIGRATION_JOB" = true]; then
+    if [-n "$PLUGIN_NAMESPACE"]; then
+        echo "Deleting the k8s Job resource: ${PLUGIN_JOBNAME} in Namespace: ${PLUGIN_NAMESPACE}"
+        kubectl delete -n ${PLUGIN_NAMESPACE} job/${PLUGIN_JOBNAME}
+    fi
+fi
+
 cd "${PLUGIN_FOLDERPATH}"
 
 DRONE_SEMVER="${tag:-$DRONE_SEMVER}"
