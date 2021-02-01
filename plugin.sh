@@ -20,8 +20,8 @@ echo "---- Checking if migrations flag set ----"
 PLUGIN_MIGRATION_JOB="${PLUGIN_MIGRATION_JOB:-false}"
 if [ $PLUGIN_MIGRATION_JOB == true ]
     then
-    PLUGIN_NAMESPACE="${PLUGIN_NAMESPACE:-missing}"
-    if [ PLUGIN_NAMESPACE != "missing" ]
+    PLUGIN_NAMESPACE="${PLUGIN_NAMESPACE:-default}"
+    if [ PLUGIN_NAMESPACE != "default" ]
         then
         echo "Deleting the k8s Job resource: ${PLUGIN_JOBNAME} in Namespace: ${PLUGIN_NAMESPACE}"
         kubectl delete -n ${PLUGIN_NAMESPACE} job/${PLUGIN_JOBNAME}
@@ -34,9 +34,15 @@ fi
 
 cd "${PLUGIN_FOLDERPATH}"
 
-DRONE_SEMVER="${tag:-$DRONE_SEMVER}"
-
-kustomize edit set image "$PLUGIN_IMAGE":$DRONE_SEMVER
+if [ $PLUGIN_MIGRATION_JOB == false ]
+    then
+    echo "---- Not a migration job ----"
+    DRONE_SEMVER="${tag:-$DRONE_SEMVER}"
+    kustomize edit set image "$PLUGIN_IMAGE":$DRONE_SEMVER
+else
+    echo "---- A migration job ----"
+    DRONE_SEMVER="${DRONE_SEMVER:-latest}"
+fi
 
 [ -n "${PLUGIN_DEBUG:-false}" ] && kustomize build
 
