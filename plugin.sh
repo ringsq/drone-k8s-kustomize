@@ -16,21 +16,21 @@ if [ -n "$PLUGIN_KUBECONFIG" ];then
     unset PLUGIN_KUBECONFIG
 fi
 
-# echo "---- Checking if migrations flag set ----"
-# PLUGIN_MIGRATION_JOB="${PLUGIN_MIGRATION_JOB:-false}"
-# if [ $PLUGIN_MIGRATION_JOB == true ]
-#     then
-#     PLUGIN_NAMESPACE="${PLUGIN_NAMESPACE:-missing}"
-#     if [ PLUGIN_NAMESPACE != "missing" ]
-#         then
-#         echo "Deleting the k8s Job resource: ${PLUGIN_JOBNAME} in Namespace: ${PLUGIN_NAMESPACE}"
-#         kubectl delete -n ${PLUGIN_NAMESPACE} job/${PLUGIN_JOBNAME}
-#     else
-#         echo "No namespace defined"
-#     fi
-# else
-#     echo "Migration variable not detected. This is a regular deployment"
-# fi
+echo "---- Checking if migrations flag set ----"
+PLUGIN_MIGRATION_JOB="${PLUGIN_MIGRATION_JOB:-false}"
+if [ $PLUGIN_MIGRATION_JOB == true ]
+    then
+    PLUGIN_NAMESPACE="${PLUGIN_NAMESPACE:-missing}"
+    if [ PLUGIN_NAMESPACE != "missing" ]
+        then
+        echo "Deleting the k8s Job resource: ${PLUGIN_JOBNAME} in Namespace: ${PLUGIN_NAMESPACE}"
+        kubectl delete -n ${PLUGIN_NAMESPACE} job/${PLUGIN_JOBNAME}
+    else
+        echo "No namespace defined"
+    fi
+else
+    echo "Migration variable not detected. This is a regular deployment"
+fi
 
 cd "${PLUGIN_FOLDERPATH}"
 
