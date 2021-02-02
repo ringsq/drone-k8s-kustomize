@@ -23,8 +23,8 @@ if [ $PLUGIN_MIGRATION_JOB == true ]
     PLUGIN_NAMESPACE="${PLUGIN_NAMESPACE:-default}"
     if [ PLUGIN_NAMESPACE != "default" ]
         then
-        echo "Deleting the k8s Job resource: ${PLUGIN_JOBNAME} in Namespace: ${PLUGIN_NAMESPACE}"
-        kubectl delete -n ${PLUGIN_NAMESPACE} job/${PLUGIN_JOBNAME} 2>&1 >/dev/null
+        echo "Deleting the k8s Job resource: ${PLUGIN_JOBNAME} in Namespace: ${PLUGIN_NAMESPACE}."
+        kubectl delete -n ${PLUGIN_NAMESPACE} job/${PLUGIN_JOBNAME} || true
     else
         echo "No namespace defined"
     fi
