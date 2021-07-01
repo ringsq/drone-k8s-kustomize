@@ -38,7 +38,8 @@ if [ $PLUGIN_MIGRATION_JOB == false ]
     then
     echo "---- Not a migration job ----"
     DRONE_SEMVER="${tag:-$DRONE_SEMVER}"
-    if [ -z "$PLUGIN_IMAGE"]; then
+    PLUGIN_IMAGE="${PLUGIN_IMAGE:-NULL}"
+    if [ $PLUGIN_IMAGE == "NULL" ]; then
         echo "Container Image not provided"
     else
         echo "Setting the deployment image"
