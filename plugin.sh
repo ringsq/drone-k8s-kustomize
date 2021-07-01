@@ -38,6 +38,7 @@ if [ $PLUGIN_MIGRATION_JOB == false ]
     then
     echo "---- Not a migration job ----"
     DRONE_SEMVER="${tag:-$DRONE_SEMVER}"
+    echo  "Plugin Image: $PLUGIN_IMAGE"
     if [ -z "$PLUGIN_IMAGE"]; then
         echo "Container Image not provided"
     else
