@@ -38,7 +38,11 @@ if [ $PLUGIN_MIGRATION_JOB == false ]
     then
     echo "---- Not a migration job ----"
     DRONE_SEMVER="${tag:-$DRONE_SEMVER}"
-    kustomize edit set image "$PLUGIN_IMAGE":$DRONE_SEMVER
+    if [ -z "$PLUGIN_IMAGE"]; then
+        echo "Container Image not provided"
+    else
+        kustomize edit set image "$PLUGIN_IMAGE":$DRONE_SEMVER
+    fi
 else
     echo "---- A migration job ----"
     DRONE_SEMVER="${DRONE_SEMVER:-latest}"
