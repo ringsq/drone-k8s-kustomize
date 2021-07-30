@@ -14,12 +14,12 @@ steps:
     settings:
       dry_run: true
       auto_tag: true
-      repo: 'docker.pkg.github.com/magna5/drone-k8s-kustomize/drone-k8s'
-      registry: docker.pkg.github.com
+      repo: 'ghcr.io/magna5/drone-k8s'
+      registry: ghcr.io
       username:
-        from_secret: docker_username
+        from_secret: github_username
       password:
-        from_secret: docker_password
+        from_secret: github_token
 
 trigger:
   event:
@@ -40,12 +40,12 @@ steps:
     image: plugins/docker
     settings:
       auto_tag: false
-      repo: 'docker.pkg.github.com/magna5/drone-k8s-kustomize/drone-k8s'
-      registry: docker.pkg.github.com
+      repo: 'ghcr.io/magna5/drone-k8s'
+      registry: ghcr.io
       username:
-        from_secret: docker_username
+        from_secret: github_username
       password:
-        from_secret: docker_password
+        from_secret: github_token
 
 trigger:
   event:
