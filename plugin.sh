@@ -1,46 +1,68 @@
 #!/bin/sh
 
+## Shell file for executing DB migrations, Deployments with
+## automatic versioning of deployment images and tag based deployments of db migrations.
+## The primary reason of using this drone plugin is, that we use
+## kustomize declarative management for k8s deployment
+## the native drone k8s plugin does not support kustomize
+## The shell script is capable of deplopying to multiple environments
+
 set -eu pipefail
 
 "${PLUGIN_DEBUG:-false}" && set -x && printenv
 
-echo ">>> Checking for kubeconfig for the k8s cluster config and k8s manifests directory path <<<"
-
-if [ -z "$PLUGIN_KUBECONFIG" ] || [ -z "$PLUGIN_FOLDERPATH" ]; then
+## Check if the folderpath for manifests is present
+echo ">>> Checking for k8s manifests directory path <<<"
+if [ -z "$PLUGIN_FOLDERPATH" ]; then
     echo "KUBECONFIG and/or FOLDERPATH not supplied"
     exit 1
 fi
 
-echo ">>> Setting kubeconfig to access the k8s cluster <<<"
-if [ -n "$PLUGIN_KUBECONFIG" ];then
-    [ -d $HOME/.kube ] || mkdir $HOME/.kube
-    echo "# Plugin PLUGIN_KUBECONFIG available" >&2
-    echo "$PLUGIN_KUBECONFIG" > $HOME/.kube/config
-    unset PLUGIN_KUBECONFIG
-fi
+## Auto load cluster config with a couple steps
+## Step1: Login to az account
+## Step2: Load the cluster config to connect the connection
+echo ">>> Adding AKS cluster as config for connection <<<"
 
-echo ">>> Checking for the deployment operation to be performed. It could be db migration job or k8s resource deployment like: deployment or namespace <<<"
+echo ">>> Signing into Azure <<<"
+az login --service-principal -u ${PLUGIN_AZURE_APPID} -p ${PLUGIN_AZURE_PASSWORD} --tenant ${PLUGIN_AZURE_TENANT} || exit 1
+
+echo ">>> Adding Cluster $HOME/.kube/config <<<"
+az aks get-credentials --name ${PLUGIN_CLUSTER} --resource-group ${PLUGIN_CLUSTER_RG} || exit 1
+
+echo ">>> Checking for the deployment operation to be performed. It could be DB migration job or k8s resource deployment like: deployment or namespace <<<"
+
+## Delete the existing `migration` job if it exists.
+## New migrations cannot be deployed without deleting the existing one.
 PLUGIN_MIGRATION_JOB="${PLUGIN_MIGRATION_JOB:-false}"
 if [ $PLUGIN_MIGRATION_JOB == true ]
     then
     PLUGIN_NAMESPACE="${PLUGIN_NAMESPACE:-default}"
     if [ PLUGIN_NAMESPACE != "default" ]
         then
-        echo ">>> Deleting the k8s Job resource: ${PLUGIN_JOBNAME} in Namespace: ${PLUGIN_NAMESPACE}. <<<"
+        echo ">>> Deleting the existing DB migration Job resource: ${PLUGIN_JOBNAME} in Namespace: ${PLUGIN_NAMESPACE}. <<<"
         kubectl delete -n ${PLUGIN_NAMESPACE} job/${PLUGIN_JOBNAME} || true
     else
-        echo ">>> No namespace defined <<<"
+        echo ">>> Error: No namespace defined for the migration job. <<<"
     fi
-else
-    echo ">>> Migration variable not detected. This is a regular deployment <<<"
 fi
 
 cd "${PLUGIN_FOLDERPATH}"
 
+## Set the DRONE_SEMVER and DRONE_TAG ENV vars in the container if not set in drone
+## DRONE_SEMVER ENV var is used for setting the image version of
+## `initContainers` and service `containers`
+## DRONE_TAG ENV var is used pass the release tag used for
+## executing database migrations
+echo ">>> Setting DRONE_SEMVER for deployments & DRONE_TAG for migrations <<<"
+DRONE_SEMVER=${DRONE_SEMVER:-${DRONE_COMMIT_SHA:0:6}}
+DRONE_TAG=${DRONE_TAG:-${DRONE_SEMVER}}
+echo ">>> Using DRONE_TAG: ${DRONE_TAG} & DRONE_SEMVER: ${DRONE_SEMVER} <<<"
+
+## Set the release tag on the `image` version for the deployment
 if [ $PLUGIN_MIGRATION_JOB == false ]
     then
     echo ">>> Executing k8s manifests at path provided $PLUGIN_FOLDERPATH.... <<<"
-    DRONE_SEMVER="${tag:-$DRONE_SEMVER}"
+
     PLUGIN_IMAGE="${PLUGIN_IMAGE:-NULL}"
     if [ $PLUGIN_IMAGE == "NULL" ]; then
         echo ">>> Don't need to set the image path and version for Containers <<<"
@@ -62,11 +84,10 @@ if [ $PLUGIN_MIGRATION_JOB == false ]
         done
         IFS="$original_ifs"
     fi
-else
-    echo ">>> Setting the DRONE_SEMVER <<<"
-    DRONE_SEMVER="${DRONE_SEMVER:-latest}"
 fi
 
+## Build the deployment manifests with kustomize declarative management and
+## Execute the deployment
 echo ">>> Deployment  Manifests: <<<"
 [ -n "${PLUGIN_DEBUG:-false}" ] && kustomize build
 
