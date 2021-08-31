@@ -8,11 +8,15 @@ Kustomize plugin for Drone CI.
 ```
 steps:
   - name: deploy
-    image: gauravgaglani/k8s-kustomize
+    image: ghcr.io/magna5/k8s-kustomize
     settings:
-      image: docker.pkg.github.com/magna5/companies_master_service/companies_master_service_image
-      kubeconfig:
-        from_secret: kubeconfig
+      image: ghcr.io/magna5/circuit-inventory-service-api
+      azure_appid:
+        from_secret: azure_appid
+      azure_password:
+        from_secret: azure_password
+      azure_tenant:
+        from_secret: azure_tenant
       folderpath: deploy/overlays/production
       debug: true
       dryrun: true
