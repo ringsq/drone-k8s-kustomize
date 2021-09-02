@@ -11,14 +11,7 @@ set -eu pipefail
 
 "${PLUGIN_DEBUG:-false}" && set -x && printenv
 
-## Check if the folderpath for manifests is present
-echo ">>> Checking for k8s manifests directory path <<<"
-if [ -z "$PLUGIN_FOLDERPATH" ]; then
-    echo "KUBECONFIG and/or FOLDERPATH not supplied"
-    exit 1
-fi
-
-echo ">>> Adding AKS cluster config for connection <<<"
+echo ">>> Connecting to the AKS cluster <<<"
 
 ## IF PLUGIN_KUBECONFIG is not passed try connecting to the cluster with `az login...`
 ## otherwise add kubeconfig in the $HOME dierctory to connect with aks cluster
@@ -50,11 +43,18 @@ if [ -z "$PLUGIN_KUBECONFIG" ]; then
         fi
     fi
 else
-    echo ">>> Setting kubeconfig to access the k8s cluster <<<"
+    echo ">>> Copying kubeconfig to access the k8s cluster <<<"
     [ -d $HOME/.kube ] || mkdir $HOME/.kube
     echo "# Plugin PLUGIN_KUBECONFIG available" >&2
     echo "$PLUGIN_KUBECONFIG" > $HOME/.kube/config
     unset PLUGIN_KUBECONFIG
+fi
+
+## Check if the folderpath for manifests is present
+echo ">>> Checking for k8s manifests directory path <<<"
+if [ -z "$PLUGIN_FOLDERPATH" ]; then
+    echo "KUBECONFIG and/or FOLDERPATH not supplied"
+    exit 1
 fi
 
 cd "${PLUGIN_FOLDERPATH}"
