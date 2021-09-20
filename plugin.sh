@@ -15,7 +15,7 @@ echo ">>> Connecting to the AKS cluster <<<"
 
 ## IF PLUGIN_KUBECONFIG is not passed try connecting to the cluster with `az login...`
 ## otherwise add kubeconfig in the $HOME dierctory to connect with aks cluster
-if [ -z "$PLUGIN_KUBECONFIG" ]; then
+if [ -z "$PLUGIN_KUBECONFIG:-false" ]; then
     ## Auto load cluster config with a couple steps
     ## Step1: Login to az account
     ## Step2: Load the cluster config to connect the connection
