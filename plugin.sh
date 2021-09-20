@@ -15,7 +15,8 @@ echo ">>> Connecting to the AKS cluster <<<"
 
 ## IF PLUGIN_KUBECONFIG is not passed try connecting to the cluster with `az login...`
 ## otherwise add kubeconfig in the $HOME dierctory to connect with aks cluster
-if [ -z "$PLUGIN_KUBECONFIG:-false" ]; then
+PLUGIN_KUBECONFIG=${PLUGIN_KUBECONFIG:-''}
+if [ -z "$PLUGIN_KUBECONFIG" ]; then
     ## Auto load cluster config with a couple steps
     ## Step1: Login to az account
     ## Step2: Load the cluster config to connect the connection
@@ -26,28 +27,29 @@ if [ -z "$PLUGIN_KUBECONFIG:-false" ]; then
     echo ">>> Adding Cluster $HOME/.kube/config <<<"
     az aks get-credentials --name ${PLUGIN_CLUSTER} --resource-group ${PLUGIN_CLUSTER_RG} || exit 1
 
-    echo ">>> Checking for the deployment operation to be performed. It could be DB migration job or k8s resource deployment like: deployment or namespace <<<"
-
-    ## Delete the existing `migration` job if it exists.
-    ## New migrations cannot be deployed without deleting the existing one.
-    PLUGIN_MIGRATION_JOB="${PLUGIN_MIGRATION_JOB:-false}"
-    if [ $PLUGIN_MIGRATION_JOB == true ]
-        then
-        PLUGIN_NAMESPACE="${PLUGIN_NAMESPACE:-default}"
-        if [ PLUGIN_NAMESPACE != "default" ]
-            then
-            echo ">>> Deleting the existing DB migration Job resource: ${PLUGIN_JOBNAME} in Namespace: ${PLUGIN_NAMESPACE}. <<<"
-            kubectl delete -n ${PLUGIN_NAMESPACE} job/${PLUGIN_JOBNAME} || true
-        else
-            echo ">>> Error: No namespace defined for the migration job. <<<"
-        fi
-    fi
 else
     echo ">>> Copying kubeconfig to access the k8s cluster <<<"
     [ -d $HOME/.kube ] || mkdir $HOME/.kube
     echo "# Plugin PLUGIN_KUBECONFIG available" >&2
     echo "$PLUGIN_KUBECONFIG" > $HOME/.kube/config
     unset PLUGIN_KUBECONFIG
+fi
+
+echo ">>> Checking for the deployment operation to be performed. It could be DB migration job or k8s resource deployment like: deployment or namespace <<<"
+
+## Delete the existing `migration` job if it exists.
+## New migrations cannot be deployed without deleting the existing one.
+PLUGIN_MIGRATION_JOB="${PLUGIN_MIGRATION_JOB:-false}"
+if [ $PLUGIN_MIGRATION_JOB == true ]
+    then
+    PLUGIN_NAMESPACE="${PLUGIN_NAMESPACE:-default}"
+    if [ PLUGIN_NAMESPACE != "default" ]
+        then
+        echo ">>> Deleting the existing DB migration Job resource: ${PLUGIN_JOBNAME} in Namespace: ${PLUGIN_NAMESPACE}. <<<"
+        kubectl delete -n ${PLUGIN_NAMESPACE} job/${PLUGIN_JOBNAME} || true
+    else
+        echo ">>> Error: No namespace defined for the migration job. <<<"
+    fi
 fi
 
 ## Check if the folderpath for manifests is present
@@ -70,6 +72,7 @@ DRONE_TAG=${DRONE_TAG:-${DRONE_SEMVER}}
 echo ">>> Using DRONE_TAG: ${DRONE_TAG} & DRONE_SEMVER: ${DRONE_SEMVER} <<<"
 
 ## Set the release tag on the `image` version for the deployment
+echo ">>> Using PLUGIN_MIGRATION_JOB: ${PLUGIN_MIGRATION_JOB}  <<<"
 if [ $PLUGIN_MIGRATION_JOB == false ]
     then
     echo ">>> Executing k8s manifests at path provided $PLUGIN_FOLDERPATH.... <<<"
