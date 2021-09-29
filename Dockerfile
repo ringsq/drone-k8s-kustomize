@@ -1,4 +1,4 @@
-FROM alpine
+FROM mcr.microsoft.com/azure-cli
 RUN apk add --no-cache curl make git bash
 
 # install kubectl
