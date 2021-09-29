@@ -11,6 +11,8 @@ steps:
     image: ghcr.io/magna5/k8s-kustomize
     settings:
       image: ghcr.io/magna5/circuit-inventory-service-api
+      cluster: 'M5-Automation'
+      cluster_rg: 'Servers_Prod_Central1'
       azure_appid:
         from_secret: azure_appid
       azure_password:
