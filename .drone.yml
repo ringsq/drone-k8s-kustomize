@@ -50,3 +50,4 @@ steps:
 trigger:
   event:
     - tag
+    - push
