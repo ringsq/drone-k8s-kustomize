@@ -34,7 +34,7 @@ steps:
     image: alpine
     commands:
       - echo "Deploying version $DRONE_SEMVER"
-      - echo -n "$DRONE_SEMVER, latest" > .tags
+      - echo -n "latest" > .tags
 
   - name: build-push-image
     image: plugins/docker
