@@ -34,7 +34,7 @@ steps:
     image: alpine
     commands:
       - echo "Deploying version $DRONE_SEMVER"
-      - echo -n "latest" > .tags
+      - echo -n "$DRONE_SEMVER, latest" > .tags
 
   - name: build-push-image
     image: plugins/docker
@@ -50,4 +50,3 @@ steps:
 trigger:
   event:
     - tag
-    - push
