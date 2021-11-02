@@ -14,7 +14,7 @@ steps:
     settings:
       dry_run: true
       auto_tag: true
-      repo: 'ghcr.io/magna5/drone-k8s'
+      repo: 'ghcr.io/ringsq/drone-k8s'
       registry: ghcr.io
       username:
         from_secret: github_username
@@ -40,7 +40,7 @@ steps:
     image: plugins/docker
     settings:
       auto_tag: false
-      repo: 'ghcr.io/magna5/drone-k8s'
+      repo: 'ghcr.io/ringsq/drone-k8s'
       registry: ghcr.io
       username:
         from_secret: github_username
