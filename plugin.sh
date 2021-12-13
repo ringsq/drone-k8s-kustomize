@@ -19,31 +19,20 @@ PLUGIN_KUBECONFIG=${PLUGIN_KUBECONFIG:-''}
 if [ -z "$PLUGIN_KUBECONFIG" ]; then
     ## Auto load cluster config with a couple steps
     ## Step1: Login to az account
-    ## Step2: Set the az account subscription(s) and
+    ## Step2: Set the az account with the right subscription id
     ## Step3: Load the cluster config to connect to the cluster if the account is set with the right subscription_id id
 
     echo ">>> Signing into Azure <<<"
     az login --service-principal -u ${PLUGIN_AZURE_APPID} -p ${PLUGIN_AZURE_PASSWORD} --tenant ${PLUGIN_AZURE_TENANT} || exit 1
 
-    echo ">>> Fetching and Setting Subscription IDs for the account <<<"
-    declare -a SUBSCRIPTION_IDS
-    SUBSCRIPTION_IDS=$(az account list --query "[].id" -o tsv)
+    echo ">>> Setting the az account with the right subscription id<<<"
+    SUBSCRIPTION_ID=${PLUGIN_SUBSCRIPTION_ID:-"5b1538d5-2945-421f-92c2-9431ef5a283d"}
+    az account set --subscription $SUBSCRIPTION_ID
 
-    for subscription in $SUBSCRIPTION_IDS
-        do
-            echo "Setting the az account with Subscription ID: $subscription"
-            az account set --subscription $subscription
+    echo ">>> Adding Cluster $HOME/.kube/config <<<"
+    az aks get-credentials --name ${PLUGIN_CLUSTER} --resource-group ${PLUGIN_CLUSTER_RG} || exit 1
 
-            echo ">>> Adding Cluster Config at $HOME/.kube/config <<<"
-            az aks get-credentials --name ${PLUGIN_CLUSTER} --resource-group ${PLUGIN_CLUSTER_RG}
 
-            if [ $? != 0 ]; then
-                echo "Breaking..."
-                break
-            else
-                echo "Fail to add the k8s cluster config because of inappropriate subscription_id"
-            fi
-    done
 else
     echo ">>> Copying kubeconfig to access the k8s cluster <<<"
     [ -d $HOME/.kube ] || mkdir $HOME/.kube
