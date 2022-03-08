@@ -26,7 +26,7 @@ if [ -z "$PLUGIN_KUBECONFIG" ]; then
     az login --service-principal -u ${PLUGIN_AZURE_APPID} -p ${PLUGIN_AZURE_PASSWORD} --tenant ${PLUGIN_AZURE_TENANT} || exit 1
 
     echo ">>> Setting the az account with the right subscription id <<<"
-    SUBSCRIPTION_ID=${PLUGIN_SUBSCRIPTION_ID:-"5b1538d5-2945-421f-92c2-9431ef5a283d"}
+    SUBSCRIPTION_ID=${PLUGIN_SUBSCRIPTION_ID:-"101ed2cb-f3fc-43ea-8b91-2beca086e4a8"}
     az account set --subscription $SUBSCRIPTION_ID
 
     echo ">>> Adding Cluster $HOME/.kube/config <<<"
