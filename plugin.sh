@@ -10,7 +10,7 @@
 set -eu pipefail
 
 echo ">>> Kubectl Version <<<"
-echo $(kubectl version)
+echo $(kubectl version --short)
 
 "${PLUGIN_DEBUG:-false}" && set -x 
 # && printenv
