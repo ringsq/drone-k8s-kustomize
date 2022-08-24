@@ -9,6 +9,9 @@
 
 set -eu pipefail
 
+echo ">>> Kubectl Version <<<"
+kubectl version
+
 "${PLUGIN_DEBUG:-false}" && set -x && printenv
 
 echo ">>> Connecting to the AKS cluster <<<"
