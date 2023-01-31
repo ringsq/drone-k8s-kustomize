@@ -72,7 +72,7 @@ cd "${PLUGIN_FOLDERPATH}"
 ## `initContainers` and service `containers`
 ## DRONE_TAG ENV var is used pass the release tag used for
 ## executing database migrations
-echo ">>> Setting IMAGE VERSION for deployments & MIIGRATION TAG for migrations. It sets the MIGRATION_TAG to DRONE TAG with backwords compatability <<<"
+echo ">>> Setting IMAGE VERSION for deployments & MIIGRATION TAG for migrations <<<"
 IMAGE_VERSION=${PLUGIN_VERSION:-${DRONE_SEMVER:-${DRONE_COMMIT_SHA:0:6}}}
 MIGRATION_TAG=${PLUGIN_MIGRATION_TAG:-${DRONE_SEMVER:-${DRONE_COMMIT_SHA:0:6}}}
 DRONE_TAG=MIGRATION_TAG
