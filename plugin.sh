@@ -72,10 +72,11 @@ cd "${PLUGIN_FOLDERPATH}"
 ## `initContainers` and service `containers`
 ## DRONE_TAG ENV var is used pass the release tag used for
 ## executing database migrations
-echo ">>> Setting DRONE_SEMVER for deployments & DRONE_TAG for migrations <<<"
-DRONE_SEMVER=${DRONE_SEMVER:-${DRONE_COMMIT_SHA:0:6}}
-DRONE_TAG=${DRONE_TAG:-${DRONE_SEMVER}}
-echo ">>> Using DRONE_TAG: ${DRONE_TAG} & DRONE_SEMVER: ${DRONE_SEMVER} <<<"
+echo ">>> Setting IMAGE VERSION for deployments & MIIGRATION TAG for migrations <<<"
+IMAGE_VERSION=${PLUGIN_VERSION:-${DRONE_SEMVER:-${DRONE_COMMIT_SHA:0:6}}}
+MIGRATION_TAG=${PLUGIN_MIGRATION_TAG:-${DRONE_SEMVER:-${DRONE_COMMIT_SHA:0:6}}}
+DRONE_TAG=MIGRATION_TAG
+echo ">>> Using MIGRATION_TAG: ${MIGRATION_TAG} & IMAGE_VERSION: ${IMAGE_VERSION} <<<"
 
 ## Set the release tag on the `image` version for the deployment
 echo ">>> Using PLUGIN_MIGRATION_JOB: ${PLUGIN_MIGRATION_JOB}  <<<"
@@ -88,7 +89,7 @@ if [ $PLUGIN_MIGRATION_JOB == false ]
         echo ">>> Don't need to set the image path and version for Containers <<<"
     else
         echo ">>> Setting the image path and version for Containers <<<"
-        kustomize edit set image "$PLUGIN_IMAGE":$DRONE_SEMVER
+        kustomize edit set image "$PLUGIN_IMAGE":$IMAGE_VERSION
     fi
 
     PLUGIN_INIT_CONTAINERS="${PLUGIN_INIT_CONTAINERS:-NULL}"
@@ -100,7 +101,7 @@ if [ $PLUGIN_MIGRATION_JOB == false ]
         IFS="|"
         for image in $PLUGIN_INIT_CONTAINERS
         do
-            kustomize edit set image "$image":$DRONE_SEMVER
+            kustomize edit set image "$image":$IMAGE_VERSION
         done
         IFS="$original_ifs"
     fi
